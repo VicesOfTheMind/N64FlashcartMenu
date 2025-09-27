@@ -480,6 +480,19 @@ static flashcart_err_t sc64_load_file (char *file_path, uint32_t rom_offset, uin
     return FLASHCART_OK;
 }
 
+/**
+ * @brief Load a buffer into the SummerCart64.
+ * 
+ * @param address Pointer to the buffer.
+ * @param rom_offset ROM offset.
+ * @param size Buffer size.
+ * @return flashcart_err_t Error code.
+ */
+static flashcart_err_t sc64_load_mem (const void *address, uint32_t rom_offset, uint32_t size) {
+    pi_dma_write_data(address, (void *) (ROM_ADDRESS + rom_offset), size);
+    return FLASHCART_OK;
+}
+
 static flashcart_err_t sc64_load_save (char *save_path) {
     void *address = NULL;
     uint32_t value;
@@ -694,6 +707,7 @@ static flashcart_t flashcart_sc64 = {
     .get_firmware_version = sc64_get_firmware_version,
     .load_rom = sc64_load_rom,
     .load_file = sc64_load_file,
+    .load_mem = sc64_load_mem,
     .load_save = sc64_load_save,
     .load_64dd_ipl = sc64_load_64dd_ipl,
     .load_64dd_disk = sc64_load_64dd_disk,

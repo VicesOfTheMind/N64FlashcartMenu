@@ -268,6 +268,22 @@ flashcart_err_t flashcart_load_file (char *file_path, uint32_t rom_offset, uint3
 }
 
 /**
+ * @brief Load a buffer into the flashcart.
+ * 
+ * @param address Pointer to the buffer.
+ * @param rom_offset ROM offset.
+ * @param size Buffer size.
+ * @return flashcart_err_t Error code.
+ */
+flashcart_err_t flashcart_load_mem (const void *address, uint32_t rom_offset, uint32_t size) {
+    if ((((uint32_t)address & 0x07) != 0) || ((rom_offset & 0x01) != 0) || ((size & 0x01) != 0)) {
+        return FLASHCART_ERR_ARGS;
+    }
+
+    return flashcart->load_mem(address, rom_offset, size);
+}
+
+/**
  * @brief Load a save file into the flashcart.
  * 
  * @param save_path Path to the save file.

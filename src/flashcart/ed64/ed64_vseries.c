@@ -139,6 +139,11 @@ static flashcart_err_t ed64_vseries_load_file (char *file_path, uint32_t rom_off
     return FLASHCART_OK;
 }
 
+static flashcart_err_t ed64_vseries_load_mem (const void *address, uint32_t rom_offset, uint32_t size) {
+    pi_dma_write_data(address, (void *) (ROM_ADDRESS + rom_offset), size);
+    return FLASHCART_OK;
+}
+
 static flashcart_err_t ed64_vseries_load_save (char *save_path) {
     // FIXME: the savetype will be none.
     return FLASHCART_OK;
@@ -156,6 +161,7 @@ static flashcart_t flashcart_ed64_vseries = {
     .get_firmware_version = ed64_vseries_get_firmware_version,
     .load_rom = ed64_vseries_load_rom,
     .load_file = ed64_vseries_load_file,
+    .load_mem = ed64_vseries_load_mem,
     .load_save = ed64_vseries_load_save,
     .load_64dd_ipl = NULL,
     .load_64dd_disk = NULL,

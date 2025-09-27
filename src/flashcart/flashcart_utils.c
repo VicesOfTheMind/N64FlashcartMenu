@@ -17,7 +17,7 @@
  * @param dst Destination address.
  * @param length Length of data to read.
  */
-void pi_dma_read_data (void *src, void *dst, size_t length) {
+void pi_dma_read_data (const void *src, void *dst, size_t length) {
     data_cache_hit_writeback_invalidate(dst, length);
     dma_read_async(dst, (uint32_t) (src), length);
     dma_wait();
@@ -30,7 +30,7 @@ void pi_dma_read_data (void *src, void *dst, size_t length) {
  * @param dst Destination address.
  * @param length Length of data to write.
  */
-void pi_dma_write_data (void *src, void *dst, size_t length) {
+void pi_dma_write_data (const void *src, void *dst, size_t length) {
     assert((((uint32_t) (src)) & 0x07) == 0);
     assert((((uint32_t) (dst)) & 0x01) == 0);
     assert((length & 1) == 0);

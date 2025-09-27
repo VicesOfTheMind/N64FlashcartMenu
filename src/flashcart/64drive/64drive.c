@@ -223,6 +223,19 @@ static flashcart_err_t d64_load_file (char *file_path, uint32_t rom_offset, uint
 }
 
 /**
+ * @brief Load a buffer into the 64Drive.
+ * 
+ * @param address Pointer to the buffer.
+ * @param rom_offset ROM offset.
+ * @param size Buffer size.
+ * @return flashcart_err_t Error code.
+ */
+static flashcart_err_t d64_load_mem (const void *address, uint32_t rom_offset, uint32_t size) {
+    pi_dma_write_data(address, (void *) (ROM_ADDRESS + rom_offset), size);
+    return FLASHCART_OK;
+}
+
+/**
  * @brief Load a save file into the 64drive.
  * 
  * @param save_path Path to the save file.
@@ -368,6 +381,7 @@ static flashcart_t flashcart_d64 = {
     .get_firmware_version = d64_get_firmware_version,
     .load_rom = d64_load_rom,
     .load_file = d64_load_file,
+    .load_mem = d64_load_mem,
     .load_save = d64_load_save,
     .load_64dd_ipl = NULL,
     .load_64dd_disk = NULL,

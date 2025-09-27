@@ -88,6 +88,8 @@ typedef struct {
     flashcart_err_t (*load_rom) (char *rom_path, flashcart_progress_callback_t *progress);
     /** @brief The flashcart file load function */
     flashcart_err_t (*load_file) (char *file_path, uint32_t rom_offset, uint32_t file_offset);
+    /** @brief The flashcart mem load function */
+    flashcart_err_t (*load_mem) (const void *address, uint32_t rom_offset, uint32_t size);
     /** @brief The flashcart save file load function */
     flashcart_err_t (*load_save) (char *save_path);
     /** @brief The flashcart disk bios load function */
@@ -159,6 +161,16 @@ flashcart_err_t flashcart_load_rom (char *rom_path, bool byte_swap, flashcart_pr
  * @return flashcart_err_t Error code.
  */
 flashcart_err_t flashcart_load_file (char *file_path, uint32_t rom_offset, uint32_t file_offset);
+
+/**
+ * @brief Load a buffer into the flashcart.
+ * 
+ * @param address Pointer to the buffer.
+ * @param rom_offset ROM offset.
+ * @param size Buffer size.
+ * @return flashcart_err_t Error code.
+ */
+flashcart_err_t flashcart_load_mem (const void *address, uint32_t rom_offset, uint32_t size);
 
 /**
  * @brief Load a save file onto the flashcart.

@@ -30,7 +30,7 @@ typedef enum {
  * @param dst Destination address.
  * @param length Length of data to read.
  */
-void pi_dma_read_data (void *src, void *dst, size_t length);
+void pi_dma_read_data (const void *src, void *dst, size_t length);
 
 /**
  * @brief Perform a DMA write operation to the PI (Peripheral Interface).
@@ -39,7 +39,7 @@ void pi_dma_read_data (void *src, void *dst, size_t length);
  * @param dst Destination address.
  * @param length Length of data to write.
  */
-void pi_dma_write_data (void *src, void *dst, size_t length);
+void pi_dma_write_data (const void *src, void *dst, size_t length);
 
 /**
  * @brief Fix the file size in the FAT filesystem.
