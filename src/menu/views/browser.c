@@ -193,7 +193,11 @@ static bool load_archive (menu_t *menu) {
             return true;
         }
 
-        entry->type = ENTRY_TYPE_ARCHIVED;
+        if (file_has_extensions(entry->name, emulator_extensions)) {
+            entry->type = ENTRY_TYPE_EMULATOR;
+        } else {
+            entry->type = ENTRY_TYPE_ARCHIVED;
+        }
         entry->size = info.m_uncomp_size;
         entry->index = i;
     }

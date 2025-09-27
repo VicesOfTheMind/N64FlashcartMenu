@@ -6,10 +6,13 @@
 
 #include <string.h>
 #include <libdragon.h>
+#include <miniz.h>
+#include <miniz_zip.h>
 #include "cart_load.h"
 #include "path.h"
 #include "utils/fs.h"
 #include "utils/utils.h"
+#include "utils/zip.h"
 
 #ifndef SAVES_SUBDIRECTORY
 #define SAVES_SUBDIRECTORY      "saves"
@@ -205,6 +208,12 @@ cart_load_err_t cart_load_64dd_ipl_and_disk (menu_t *menu, flashcart_progress_ca
     return CART_LOAD_OK;
 }
 
+static size_t mz_zip_file_write_callback(void *pOpaque, mz_uint64 ofs, const void *pBuf, size_t n) {
+    uint32_t *emulated_file_offset = (uint32_t *)pOpaque;
+    flashcart_err_t err = flashcart_load_mem(pBuf, 0x200000 + (uint32_t)ofs, n);
+    return n;
+}
+
 /**
  * @brief Load an emulator and its ROM.
  * 
@@ -264,18 +273,32 @@ cart_load_err_t cart_load_emulator (menu_t *menu, cart_load_emu_type_t emu_type,
 
     path_free(path);
 
-    path = path_clone_push(menu->browser.directory, menu->browser.entry->name);
+    path = menu->browser.archive ?
+        path_clone(menu->browser.directory) : path_clone_push(menu->browser.directory, menu->browser.entry->name);
 
     switch (emu_type) {
         case CART_LOAD_EMU_TYPE_SNES:
             // NOTE: The emulator expects the header to be removed from the ROM being uploaded.
-            emulated_file_offset = ((file_get_size(path_get(path)) & 0x3FF) == 0x200) ? 0x200 : 0;
+            int64_t file_size = menu->browser.archive ?
+                file_get_size(path_get(path)) : archive_file_get_size(&menu->browser.zip, menu->browser.entry->index);
+            emulated_file_offset = ((file_size & 0x3FF) == 0x200) ? 0x200 : 0;
             break;
         default:
             break;
     }
 
-    menu->flashcart_err = flashcart_load_file(path_get(path), emulated_rom_offset, emulated_file_offset);
+    if (menu->browser.archive) {
+        if (!mz_zip_reader_extract_to_callback(
+            &menu->browser.zip,
+            menu->browser.entry->index,
+            mz_zip_file_write_callback,
+            &emulated_file_offset, 0)) {
+            menu->flashcart_err = FLASHCART_ERR_LOAD;
+        }
+    } else {
+        menu->flashcart_err = flashcart_load_file(path_get(path), emulated_rom_offset, emulated_file_offset);
+    }
+
     if (menu->flashcart_err != FLASHCART_OK) {
         path_free(path);
         return CART_LOAD_ERR_EMU_ROM_LOAD_FAIL;

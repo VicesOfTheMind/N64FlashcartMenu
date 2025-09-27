@@ -81,7 +81,8 @@ SRCS = \
 	menu/views/settings_editor.c \
 	menu/views/rtc.c \
 	menu/views/flashcart_info.c \
-	utils/fs.c
+	utils/fs.c \
+	utils/zip.c
 
 FONTS = \
 	Firple-Bold.ttf
